@@ -84,6 +84,13 @@ label{font-size:14px;font-weight:600;display:block}input,select,textarea{width:1
 .mt{display:flex;width:max-content;animation:mq 70s linear infinite}.mq:hover .mt{animation-play-state:paused}@keyframes mq{to{transform:translateX(-50%)}}
 .mi{display:flex;align-items:center;gap:12px;margin-right:44px;color:#cfe0d6;font:600 15px Manrope,Inter,sans-serif;white-space:nowrap}.mi .lg{width:34px;height:34px;font-size:15px;border-radius:9px}.mi:hover .lg{transform:translateY(-5px) rotate(-8deg) scale(1.15)}
 .rv{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}.rv.in{opacity:1;transform:none}
+[hidden]{display:none!important}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none;filter:none}.cmp .btn.s2{background:transparent;color:#fff;border:1px solid #4a7567}.cb{display:flex;gap:8px;flex:none}
+.mod{position:fixed;inset:0;z-index:80;background:rgba(10,24,22,.72);display:flex;align-items:flex-start;justify-content:center;padding:calc(env(safe-area-inset-top,0px) + 24px) 16px 24px;overflow-y:auto;overscroll-behavior:contain}
+.box{position:relative;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:14px;width:100%;max-width:760px;padding:26px;animation:up .3s ease both}
+.x{position:absolute;top:10px;right:14px;background:none;border:0;font-size:30px;line-height:1;color:var(--mute);cursor:pointer}.x:hover{color:var(--ink)}
+.cmpg{display:grid;grid-template-columns:1fr 1fr;gap:0 18px;margin-top:18px}.cmpg .lb{grid-column:1/-1;font:600 11px Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+.cmpg .ch2{display:flex;align-items:center;gap:10px;font:800 18px Manrope,Inter,sans-serif}.cmpg div{min-width:0}.mf{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
 </style>
 </head>
 <body>
@@ -111,8 +118,7 @@ label{font-size:14px;font-weight:600;display:block}input,select,textarea{width:1
 <p class="intro">Search, filter by goal, save favourites and compare any two side by side.</p>
 <input id="q" type="search" placeholder="Search tools: video, voice, free…" aria-label="Search tools">
 <div class="chips" id="goals"></div><div class="g" id="tg"></div>
-<div id="cmpbar" class="cmp" hidden><span id="cmpt"></span><button class="btn" id="cmpgo">Compare</button></div>
-<div id="cmpout" class="card" style="margin-top:14px;overflow-x:auto" hidden></div>
+<div id="cmpbar" class="cmp" hidden><span id="cmpt"></span><span class="cb"><button class="btn s2" id="cmpclr">Clear</button><button class="btn" id="cmpgo" disabled>Compare</button></span></div>
 </div></section>
 
 <section class="sec alt" id="prompts"><div class="wrap">
@@ -176,6 +182,8 @@ label{font-size:14px;font-weight:600;display:block}input,select,textarea{width:1
 <div><p>WhatsApp <a target="_blank" rel="noopener" href="https://wa.me/254111839718">0111 839 718</a> or <a target="_blank" rel="noopener" href="https://wa.me/254737716698">0737 716 698</a></p>
 <p>Free tiers and limits change often, so check each tool’s site. Some links may become affiliate links later, and we will say so when they do. Not affiliated with the tools listed.</p></div>
 </div></footer>
+
+<div id="cmpmod" class="mod" hidden role="dialog" aria-modal="true" aria-label="Compare tools"><div class="box"><button class="x" id="cmpx" aria-label="Close comparison">×</button><div id="cmpout"></div></div></div>
 
 <script>
 var WA="254111839718",BRAND="PracticalIQ";
@@ -256,7 +264,7 @@ function draw(a){
  var l=tools.filter(function(t){if(goal==="saved"&&saved.indexOf(t.n)<0)return false;if(goal!=="all"&&goal!=="saved"&&t.g!==goal)return false;return !q||(t.n+" "+t.t+" "+t.g+" "+t.p).toLowerCase().indexOf(q)>=0});
  $("tg").innerHTML=l.length?l.map(function(t){var s=saved.indexOf(t.n)>=0,c=cmp.indexOf(t.n)>=0;
   return '<div class="card"><div class="row">'+tile(t.n)+'<button class="ic'+(s?" on":"")+'" data-s="'+t.n+'" aria-label="Save '+t.n+'">'+(s?"♥":"♡")+'</button></div><span class="k">'+t.g+'</span><h3>'+t.n+'</h3><p>'+t.t+'</p><div class="row"><span class="pr">'+t.p+'</span><span><a class="l" target="_blank" rel="noopener" href="'+t.u+'">Open →</a><button class="btn s" data-c="'+t.n+'">'+(c?"✓ Selected":"Compare")+'</button></span></div></div>'}).join(""):'<p class="intro">No match yet. Try “video”, “voice” or “free”.</p>';
- $("cmpbar").hidden=!cmp.length;$("cmpt").textContent=cmp.length+" of 2 selected";
+ cmpUI();
  [].forEach.call($("tg").children,function(c,i){c.style.animationDelay=Math.min(i,12)*45+"ms"});
 }
 $("q").oninput=function(){$("hq").value=this.value;draw(1)};
@@ -267,10 +275,18 @@ $("tg").onclick=function(e){var s=e.target.dataset.s,c=e.target.dataset.c;
  if(s){var i=saved.indexOf(s);i<0?saved.push(s):saved.splice(i,1);persist()}
  if(c){var j=cmp.indexOf(c);j<0?(cmp.length>=2&&cmp.shift(),cmp.push(c)):cmp.splice(j,1)}
  if(s||c)draw()};
-$("cmpgo").onclick=function(){if(cmp.length<2){$("cmpt").textContent="Pick 2 tools to compare";return}
- var a=tools.filter(function(t){return t.n===cmp[0]})[0],b=tools.filter(function(t){return t.n===cmp[1]})[0];
- function r(l,k){return '<tr><th>'+l+'</th><td>'+a[k]+'</td><td>'+b[k]+'</td></tr>'}
- $("cmpout").hidden=false;$("cmpout").innerHTML='<table><tr><th></th><th>'+a.n+'</th><th>'+b.n+'</th></tr>'+r("Best for","g")+r("Price","p")+r("Our take","t")+'<tr><th>Link</th><td><a class="l" target="_blank" rel="noopener" href="'+a.u+'">Open</a></td><td><a class="l" target="_blank" rel="noopener" href="'+b.u+'">Open</a></td></tr></table>'};
+function cmpUI(){$("cmpbar").hidden=!cmp.length;$("cmpgo").disabled=cmp.length<2;
+ $("cmpt").innerHTML=cmp.length<2?'<b>'+(cmp[0]||"")+'</b> selected · pick one more tool to compare':'<b>'+cmp[0]+'</b> vs <b>'+cmp[1]+'</b>'}
+function byName(n){return tools.filter(function(t){return t.n===n})[0]}
+function openCmp(){if(cmp.length<2)return;var a=byName(cmp[0]),b=byName(cmp[1]);
+ function row(l,k){return '<div class="lb">'+l+'</div><div>'+esc(a[k])+'</div><div>'+esc(b[k])+'</div>'}
+ $("cmpout").innerHTML='<h3 style="font-size:22px">Compare tools</h3><div class="cmpg"><div class="ch2">'+tile(a.n)+esc(a.n)+'</div><div class="ch2">'+tile(b.n)+esc(b.n)+'</div>'+row("Best for","g")+row("Price","p")+row("Our take","t")+'</div><div class="mf"><a class="btn" target="_blank" rel="noopener" href="'+a.u+'">Open '+esc(a.n)+' →</a><a class="btn d" target="_blank" rel="noopener" href="'+b.u+'">Open '+esc(b.n)+' →</a></div>';
+ $("cmpmod").hidden=false;document.body.style.overflow="hidden";$("cmpx").focus()}
+function closeCmp(){$("cmpmod").hidden=true;document.body.style.overflow="";$("cmpgo").focus()}
+$("cmpgo").onclick=openCmp;$("cmpx").onclick=closeCmp;
+$("cmpclr").onclick=function(){cmp=[];draw()};
+$("cmpmod").onclick=function(e){if(e.target===this)closeCmp()};
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&!$("cmpmod").hidden)closeCmp()});
 $("pg").innerHTML=prompts.map(function(p,i){return '<div class="card"><span class="k">Prompt</span><h3>'+p[0]+'</h3><p>'+esc(p[1])+'</p><div class="row"><span></span><button class="btn s" data-p="'+i+'">Copy</button></div></div>'}).join("");
 $("pg").onclick=function(e){var i=e.target.dataset.p;if(i!=null)copy(prompts[i][1],e.target)};
 $("gg").innerHTML=guides.map(function(g,i){return '<details><summary><i>0'+(i+1)+'</i>'+g[1]+'<span class="k">'+g[0]+'</span></summary><ol>'+g[2].map(function(s){return '<li>'+esc(s)+'</li>'}).join("")+'</ol></details>'}).join("");
