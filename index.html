@@ -166,6 +166,8 @@ mask-image:radial-gradient(circle at var(--mx,72%) var(--my,30%),#000 0,rgba(0,0
 .mq::-webkit-scrollbar{display:none}
 .mt{animation:none}
 .mi{flex:none}
+@media(max-width:700px){.hero::before{background:radial-gradient(300px circle at var(--mx,72%) var(--my,30%),rgba(201,243,106,.26),transparent 68%)}}
+.hero.nomask .wall{opacity:.24}
 </style>
 </head>
 <body>
@@ -431,7 +433,7 @@ $("hint").textContent=matchMedia("(pointer: coarse)").matches?"Tap anywhere to s
  var WALL=document.createElement("div");WALL.className="wall";HERO.insertBefore(WALL,HERO.firstChild);
  var stl=document.createElement("style");stl.textContent=PHOTOS.map(function(d,i){return ".p"+i+"{background-image:url("+d+")}"}).join("");document.head.appendChild(stl);
  var cols=[],SR=230,M={x:0,y:0},T={x:0,y:0},tgt={x:0,y:0},P={last:-9999},D=null,vel=0,boost=1,pu=null,last=0,first=true;
- function build(){var W=HERO.clientWidth,H=HERO.clientHeight,N=W<700?3:W<1000?4:6,g=14,cw=(W+g)/N-g,th=cw*1.5,sh=PHOTOS.length*(th+g);SR=W<700?125:190;WALL.style.setProperty("--sr",SR+"px");WALL.innerHTML="";cols=[];
+ function build(){var W=HERO.clientWidth,H=HERO.clientHeight,N=W<700?3:W<1000?4:6,g=14,cw=(W+g)/N-g,th=cw*1.5,sh=PHOTOS.length*(th+g);SR=W<700?145:190;WALL.style.setProperty("--sr",SR+"px");WALL.innerHTML="";cols=[];
   for(var c=0;c<N;c++){var col=document.createElement("div");col.className="wc";col.style.left=c*(cw+g)+"px";col.style.width=cw+"px";var tr=document.createElement("div");tr.className="wt",h="";
    for(var k=0;k<PHOTOS.length*2;k++){h+='<div class="wp p'+((k+c*3)%PHOTOS.length)+'" data-i="'+((k+c*3)%PHOTOS.length)+'"></div>'}
    tr.innerHTML=h;col.appendChild(tr);WALL.appendChild(col);cols.push({t:tr,y:-((c*377)%sh),dir:c%2?1:-1,sp:16+((c*7)%5)*5,f:.8+(c%3)*.15,sh:sh})}
@@ -447,10 +449,13 @@ $("hint").textContent=matchMedia("(pointer: coarse)").matches?"Tap anywhere to s
   if(d.type!=="mouse"){tgt.x=M.x=x;tgt.y=M.y=y;P.last=performance.now()}
   pulse(x,y)}
  HERO.addEventListener("pointerup",up);HERO.addEventListener("pointercancel",up);
+ HERO.addEventListener("touchstart",tt,{passive:true});HERO.addEventListener("touchmove",tt,{passive:true});
+ function tt(e){var q=e.touches&&e.touches[0];if(!q)return;var r=HERO.getBoundingClientRect();tgt.x=q.clientX-r.left;tgt.y=q.clientY-r.top;P.last=performance.now()}
+ var okm=window.CSS&&CSS.supports&&(CSS.supports("mask-image","radial-gradient(circle at 10px 10px,#000,transparent)")||CSS.supports("-webkit-mask-image","radial-gradient(circle at 10px 10px,#000,transparent)"));if(!okm)HERO.classList.add("nomask");
  var rt;window.addEventListener("resize",function(){clearTimeout(rt);rt=setTimeout(build,150)});
  build();
  function loop(t){var W=HERO.clientWidth,H=HERO.clientHeight,dt=Math.min(.05,(t-last)/1000||0);last=t;
-  if(!RM&&t-P.last>2600){tgt.x=W*(.5+.42*Math.sin(t/2700));tgt.y=H*(.5+.38*Math.sin(t/3500+1.3))}
+  if(t-P.last>2600){var vr=HERO.getBoundingClientRect(),tp=Math.max(0,-vr.top)+50,bt=Math.min(H,innerHeight-vr.top)-50;if(bt<tp+40){tp=0;bt=H}if(RM){tgt.x=W*.5;tgt.y=(tp+bt)/2}else{tgt.x=W*(.5+.42*Math.sin(t/2700));tgt.y=tp+(bt-tp)*(.5+.45*Math.sin(t/3500+1.3))}}
   var ox=M.x,oy=M.y,k=RM?1:.14;M.x+=(tgt.x-M.x)*k;M.y+=(tgt.y-M.y)*k;T.x+=(M.x-T.x)*.06;T.y+=(M.y-T.y)*.06;
   boost+=((1+Math.min(2.5,Math.hypot(M.x-ox,M.y-oy)*.35))-boost)*.06;
   if(!RM){cols.forEach(function(c){c.y+=c.dir*c.sp*dt*boost+vel*c.f});vel*=.93;paint()}
