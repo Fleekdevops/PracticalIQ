@@ -78,6 +78,12 @@ label{font-size:14px;font-weight:600;display:block}input,select,textarea{width:1
 .pv .card{transition:border-color .15s,transform .15s,box-shadow .15s,translate .3s ease-out}
 .pv .card:nth-child(1){translate:calc(var(--rx,0)*-8px) calc(var(--ry,0)*-6px)}.pv .card:nth-child(2){translate:calc(var(--rx,0)*10px) calc(var(--ry,0)*8px)}.pv .card:nth-child(3){translate:calc(var(--rx,0)*-14px) calc(var(--ry,0)*10px)}
 .btn{transition:transform .15s,filter .15s,translate .2s}.logo svg{transition:transform .25s}.logo:hover svg{transform:rotate(-10deg) scale(1.1)}
+.logo{position:relative}
+.logo .dd{position:absolute;left:37px;right:0;top:0;bottom:0;pointer-events:none;overflow:visible;z-index:2}
+.logo .dp{position:absolute;line-height:1;pointer-events:none;will-change:transform,opacity;opacity:0;margin:-8px 0 0 -8px}
+.logo .dp.dc{width:6px;height:6px;border-radius:50%;margin:-3px 0 0 -3px;box-shadow:0 0 0 1px rgba(255,255,255,.4)}
+.logo .ddb{font-size:15px;line-height:1;display:inline-block;margin-left:-3px;animation:ddb 2.6s ease-in-out infinite}
+@keyframes ddb{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-2px) rotate(6deg)}}
 .lg{display:grid;place-items:center;width:42px;height:42px;border-radius:11px;flex:none;background:linear-gradient(135deg,hsl(var(--h) 58% 48%),hsl(calc(var(--h) + 30) 62% 32%));color:#fff;font:800 18px Manrope,Inter,sans-serif;box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 4px 12px rgba(0,0,0,.18);transition:transform .25s}
 .g .card:hover .lg,.pv .card:hover .lg{transform:rotate(-6deg) scale(1.1)}
 .g .card,.pv .card{position:relative;will-change:transform}.g .card::before,.pv .card::before{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(240px circle at var(--px,50%) var(--py,50%),rgba(201,243,106,.28),transparent 60%);opacity:0;transition:opacity .25s;pointer-events:none}
@@ -494,5 +500,102 @@ if(!RM){
 draw(1);
 </script>
 <script>(function(){var y=document.getElementById("yr");if(y)y.textContent=new Date().getFullYear()})();document.addEventListener("click",function(e){var b=e.target.closest("[data-copy]");if(!b)return;var t=b.getAttribute("data-copy"),l=b.getAttribute("data-lbl");function ok(){b.textContent="Copied ✓";setTimeout(function(){b.textContent=l},1800)}function fb(){var a=document.createElement("textarea");a.value=t;a.style.cssText="position:fixed;opacity:0";document.body.appendChild(a);a.select();try{document.execCommand("copy");ok()}catch(x){b.textContent=t}document.body.removeChild(a)}try{navigator.clipboard.writeText(t).then(ok,fb)}catch(x){fb()}});</script>
+<script>(function(){
+var L=document.querySelector("a.logo[data-go=top]");if(!L)return;
+var RM=matchMedia("(prefers-reduced-motion: reduce)").matches;
+function easter(y){var a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451),t=h+l-7*m+114;return new Date(y,Math.floor(t/31)-1,t%31+1)}
+var TH={
+newyear:{b:"🎆",p:["🎆","🎉","✨","🥳"],m:"burst",l:"Happy New Year! 🎆"},
+jan:{b:"✨",p:["✨","⭐","💫"],m:"rise",l:"New year, new skills ✨"},
+feb:{b:"💖",p:["💖","💕","💗"],m:"rise",l:"Happy Valentine’s month 💖"},
+women:{b:"💜",p:["💜","🌸","✨"],m:"rise",l:"Happy International Women’s Day 💜"},
+mar:{b:"🌸",p:["🌸","🌼","🌷"],m:"fall",l:"Spring is here 🌸"},
+easter:{b:"🐣",p:["🐣","🥚","🐰","🌷"],m:"rise",l:"Happy Easter 🐣"},
+apr:{b:"🌧️",p:["💧","💧","🌧️"],m:"fall",l:"April showers 🌧️"},
+africa:{b:"🌍",p:["🌍","✨","💛","💚"],m:"burst",l:"Happy Africa Day 🌍"},
+may:{b:"🌱",p:["🌱","🌿","🍃"],m:"rise",l:"Growing season 🌱"},
+jun:{b:"☀️",p:["☀️","🌻","✨"],m:"rise",l:"Mid-year sunshine ☀️"},
+jul:{b:"🎈",p:["🎈","🎈","✨"],m:"rise",l:"Aim high 🎈"},
+aug:{b:"🎒",p:["🎒","📚","✏️"],m:"rise",l:"Back to school 🎒"},
+sep:{b:"🍎",p:["🍎","✏️","📖"],m:"rise",l:"Learning season 🍎"},
+oct:{b:"🎃",p:["🦇","🦇","🦇","🎃"],m:"fly",l:"Happy Halloween! 🎃"},
+nov:{b:"🍂",p:["🍂","🍁","🍂"],m:"fall",l:"Happy November 🍂"},
+dec:{b:"🎄",p:["❄️","❄️","✨","⭐"],m:"fall",l:"Happy holidays 🎄"},
+ramadan:{b:"🌙",p:["🌙","⭐","✨"],m:"rise",l:"Ramadan Kareem 🌙"},
+eidfitr:{b:"🌙",p:["🌙","✨","🎉","💚"],m:"burst",l:"Eid Mubarak! 🌙"},
+eidadha:{b:"🌙",p:["🌙","✨","🐑","💚"],m:"burst",l:"Eid al-Adha Mubarak! 🌙"},
+christmas:{b:"🎅",p:["🎁","❄️","⭐","🎄"],m:"fall",l:"Merry Christmas! 🎅"},
+valentine:{b:"💘",p:["💘","💖","💕","🌹"],m:"burst",l:"Happy Valentine’s Day 💘"},
+patrick:{b:"🍀",p:["🍀","💚","✨"],m:"fall",l:"Happy St Patrick’s Day 🍀"},
+earth:{b:"🌍",p:["🌍","🌱","💚"],m:"rise",l:"Happy Earth Day 🌍"},
+labour:{b:"💪",p:["🛠️","💪","✨"],m:"rise",l:"Happy Labour Day 💪"},
+mother:{b:"💐",p:["💐","💖","🌷"],m:"rise",l:"Happy Mother’s Day 💐"},
+father:{b:"👔",p:["👔","💙","⭐"],m:"rise",l:"Happy Father’s Day 👔"},
+teachers:{b:"🍎",p:["🍎","📚","✏️"],m:"rise",l:"Happy World Teachers’ Day 🍎"},
+utamaduni:{b:"🎭",p:["🎭","🥁","✨"],m:"burst",l:"Happy Utamaduni Day 🎭"},
+blackfriday:{b:"🛍️",p:["🛍️","🏷️","💥"],m:"burst",l:"Black Friday deals 🛍️"},
+kenya:{b:"🎉",c:["#f2f2f2","#e03a3e","#1fa64a","#111"],m:"burst",l:"Happy national day!"}
+};
+var KD={6:"Madaraka Day",10:"Mashujaa Day",12:"Jamhuri Day"};
+var MO=["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"];
+function hij(d){try{var o={};new Intl.DateTimeFormat("en-u-ca-islamic-umalqura-nu-latn",{day:"numeric",month:"numeric"}).formatToParts(d).forEach(function(x){o[x.type]=+x.value});return o}catch(e){return{}}}
+function nth(y,mo,dow,k){return(dow-new Date(y,mo,1).getDay()+7)%7+1+7*(k-1)}
+function pick(d){var m=d.getMonth()+1,n=d.getDate(),y=d.getFullYear();
+if((m==1&&n<=3)||(m==12&&n>=30))return"newyear";
+if(m==12&&n>=24&&n<=26)return"christmas";
+var h=hij(d);
+if(h.month==10&&h.day<=3)return"eidfitr";
+if(h.month==12&&h.day>=9&&h.day<=12)return"eidadha";
+if((m==6&&n==1)||(m==10&&n==20)||(m==12&&n==12))return"kenya";
+var df=Math.round((new Date(y,m-1,n)-easter(y))/864e5);if(df>=-7&&df<=1)return"easter";
+if(m==2&&n>=13&&n<=15)return"valentine";
+if(m==3&&n>=7&&n<=9)return"women";
+if(m==3&&n==17)return"patrick";
+if(m==4&&n==22)return"earth";
+if(m==5&&n==1)return"labour";
+if(m==5&&n>=24&&n<=26)return"africa";
+if(m==5){var ms=nth(y,4,0,2);if(n>=ms-1&&n<=ms)return"mother"}
+if(m==6){var fs=nth(y,5,0,3);if(n>=fs-1&&n<=fs)return"father"}
+if(m==10&&n==5)return"teachers";
+if(m==10&&n==10)return"utamaduni";
+if(m==11){var bf=nth(y,10,4,4)+1;if(n>=bf&&n<=bf+3)return"blackfriday"}
+if(h.month==9)return"ramadan";
+return MO[m-1]}
+var dd=document.createElement("span");dd.className="dd";dd.setAttribute("aria-hidden","true");
+var bd=document.createElement("span");bd.className="ddb";bd.setAttribute("aria-hidden","true");
+L.appendChild(bd);L.appendChild(dd);
+var T,key;
+function rnd(a,b){return a+Math.random()*(b-a)}
+function apply(k){key=k;T=TH[k];bd.textContent=T.b;dd.textContent="";
+var l=T.l;if(k=="kenya")l="Happy "+(KD[new Date().getMonth()+1]||"national day")+"!";
+L.title=l+" · Home"}
+function spawn(mode){var w=dd.offsetWidth||110,h=dd.offsetHeight||40;
+var el=document.createElement("span");el.className="dp";
+var x=rnd(.08,.92)*w,y=h*.5,dx,dy,dur,kf,i=el;
+if(T.c){el.className+=" dc";el.style.background=T.c[Math.floor(Math.random()*T.c.length)]}
+else{var s=document.createElement("span");s.textContent=T.p[Math.floor(Math.random()*T.p.length)];s.style.display="inline-block";el.appendChild(s);el.style.fontSize=rnd(12,18)+"px";i=s}
+if(mode=="fly"){var dr=Math.random()<.5?-1:1;dx=dr*rnd(60,150);dur=rnd(1900,2900);
+kf=[{transform:"translate(0,0) scale(.2)",opacity:0},{transform:"translate("+dx*.25+"px,"+rnd(-12,-4)+"px) scale(1)",opacity:1,offset:.15},{transform:"translate("+dx*.6+"px,"+rnd(4,16)+"px) scale(1.05)",opacity:1,offset:.6},{transform:"translate("+dx+"px,"+rnd(-8,26)+"px) scale(.9)",opacity:0}];
+if(!T.c)i.animate([{transform:"scaleX(1)"},{transform:"scaleX(.45)"},{transform:"scaleX(1)"}],{duration:230,iterations:Infinity})}
+else if(mode=="rise"){y=h*.8;dx=rnd(-14,14);dy=-rnd(28,42);dur=rnd(1500,2300);
+kf=[{transform:"translate(0,0) scale(.5)",opacity:0},{transform:"translate("+dx*.4+"px,"+dy*.35+"px) scale(1)",opacity:1,offset:.25},{transform:"translate("+dx+"px,"+dy+"px) scale(1.1)",opacity:0}]}
+else if(mode=="fall"){y=0;dx=rnd(-16,16);dy=rnd(42,62);dur=rnd(2000,3000);var r=rnd(-180,180);
+kf=[{transform:"translate(0,0) rotate(0deg)",opacity:0},{opacity:1,offset:.15,transform:"translate("+dx*.2+"px,"+dy*.15+"px) rotate("+r*.2+"deg)"},{transform:"translate("+dx+"px,"+dy+"px) rotate("+r+"deg)",opacity:0}]}
+else{var a=rnd(0,6.283),d=rnd(30,70);dx=Math.cos(a)*d*1.5;dy=Math.sin(a)*d;if(dy<-22)dy=-dy*.5;dur=rnd(900,1400);
+kf=[{transform:"translate(0,0) scale(.3)",opacity:1},{transform:"translate("+dx+"px,"+dy+"px) scale(1)",opacity:0}]}
+el.style.left=x+"px";el.style.top=y+"px";dd.appendChild(el);
+var an=el.animate(kf,{duration:dur,easing:"ease-out",fill:"forwards"});an.onfinish=function(){el.remove()}}
+function many(mode,n){for(var j=0;j<n;j++)setTimeout(function(){spawn(mode)},j*(mode=="burst"?25:140))}
+function tick(){if(!document.hidden){var m=T.m;if(m=="burst")many("burst",9);else many(m,m=="fly"?2:1)}
+setTimeout(tick,T.m=="burst"?rnd(3200,4800):rnd(1100,1900))}
+var order=["newyear","jan","valentine","feb","women","patrick","mar","easter","earth","apr","labour","mother","africa","may","father","jun","jul","aug","sep","teachers","utamaduni","oct","kenya","blackfriday","nov","ramadan","eidfitr","eidadha","christmas","dec"],ci=-1;
+apply(pick(new Date()));
+if(RM)return;
+L.addEventListener("click",function(e){
+if(e.shiftKey){e.preventDefault();e.stopPropagation();ci=(ci+1)%order.length;apply(order[ci]);many(T.m=="fly"?"fly":"burst",T.m=="fly"?4:9);return}
+many(T.m=="fly"?"fly":"burst",T.m=="fly"?5:9)});
+setTimeout(tick,700);
+})();
+</script>
 </body>
 </html>
